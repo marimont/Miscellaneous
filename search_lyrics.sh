@@ -1,3 +1,19 @@
+#this script:	 
+#	-visits a directories tree lookin for .mp3 files
+#	-extracts ARTIST and TITLE tags by means of mp3info tool
+#	-formats them by replacing spaces and other special characters with '-'
+#	-looks for the lyrics on musixmatch
+#	-downloads the html page by means of wget and saves it into a html file
+#	-parses the html file to extract the lyrics and save them into a txt file by means of xmllint combined  with xpath
+#	-adds the lyrics to the id3 tag of the song by means of eyeD3
+#	-removes the files
+
+#There are two issues:
+#	-some special characters should be substituted so, sometimes, the generated URL is not correct and the text cannot be found
+#	-after a while the website blocks you, because it understand it's not a human who's searching for the lyrics
+
+#This is a first quite-working version of the script. I'll work to solve those issues
+
 #!/bin/bash
 
 if [ "$#" -ne 1 ]; then
