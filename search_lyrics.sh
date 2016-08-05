@@ -21,29 +21,36 @@ if [ "$#" -ne 1 ]; then
 fi
 
 song_array=()
+
+#find mp3 files and print them to stdout -> mechanism to store filenames with spaces
 while IFS=  read -r -d $'\0'; do
     song_array+=("$REPLY")
 done < <(find "$1" -name "*.mp3" 2>/dev/null -print0)
 
+#processing each song
 for song in "${song_array[@]}"
 do
 	artist="$(mp3info -p %a "$song")"
 	title="$(mp3info -p %t "$song")"
 	echo "Song found: $title, $artist"
 
+	#eliminate spaces, commas and apostrophes
 	artist=${artist//[ \',]/-}
 	title=${title//[ \',]/-}
 
 	html_file="$song".html
 	txt_file="$song".txt
 	
+	#getting html file containing the lyrics
 	echo "Accessing "https://www.musixmatch.com/lyrics/$artist/$title""
 	wget https://www.musixmatch.com/lyrics/$artist/$title -q -O "$html_file"
 
+	#parsing the html to get the lyrics
 	xmllint --html --xpath '//p[@class="mxm-lyrics__content"]/text()' "$html_file" 1>"$txt_file" 2>/dev/null
 	echo "$txt_file created"
 	exit
 
+	#adding lyrics tag
 	eyeD3 --lyrics=ita:lyrics:"$(cat "$txt_file")" "$song"
 	echo "Added lyrics to "$song""
 	exit
